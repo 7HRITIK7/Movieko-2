@@ -1,9 +1,12 @@
+// This file is the main entry point for the frontend application. It initializes the React application and sets up routing.
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, MapPin, Calendar, Clock, Star, Play, User, Menu, X, ChevronRight, Zap, Award, Users, TrendingUp, Gift, Bell, Armchair, ArrowRight, Ticket, Mail, Phone, CreditCard, Sparkles, Percent, LoaderCircle } from 'lucide-react';
 import axios from 'axios';
 
 // The backend server URL
-const API_URL = 'http://localhost:5000/api';
+// ...existing code...
+const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5000/api';
+// ...existing code...
 
 // --- Helper Components ---
 
