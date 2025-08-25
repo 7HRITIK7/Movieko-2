@@ -4,9 +4,7 @@ import { Search, MapPin, Calendar, Clock, Star, Play, User, Menu, X, ChevronRigh
 import axios from 'axios';
 
 // The backend server URL
-// ...existing code...
 const API_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:5000/api';
-// ...existing code...
 
 // --- Helper Components ---
 
@@ -36,36 +34,43 @@ const LoadingScreen = () => (
     </div>
 );
 
-const HeroSection = ({ heroSlides, currentSlide, setCurrentSlide, setSelectedMovie, setWatchingTrailer }) => (
-    <div className="relative h-[70vh] overflow-hidden rounded-3xl shadow-2xl">
-        {heroSlides.map((slide, index) => (
-            <div key={slide.movie.id} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
-                <img src={slide.movie.backdrop} alt={slide.movie.title} className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                <div className="absolute left-8 md:left-16 top-1/2 transform -translate-y-1/2 text-white max-w-2xl">
-                    <div className="animate-slideInLeft">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">{slide.title}</h1>
-                        <p className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed drop-shadow-md">{slide.subtitle}</p>
-                        <div className="flex flex-col sm:flex-row gap-4">
-                            <button onClick={() => setSelectedMovie(slide.movie)} className="shimmer-button px-8 py-4 bg-gradient-to-r from-fuchsia-600 via-pink-600 to-rose-600 rounded-2xl font-bold text-lg hover:from-fuchsia-700 hover:to-rose-700 transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-fuchsia-500/40">
-                                Book Now - Starting at ₹{slide.movie.price}
-                            </button>
-                            <button onClick={() => setWatchingTrailer(slide.movie.trailer)} className="px-8 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-bold text-lg hover:bg-white/30 transform hover:scale-105 transition-all duration-300 border border-white/20">
-                                Watch Trailer
-                            </button>
+const HeroSection = ({ heroSlides, currentSlide, setCurrentSlide, setSelectedMovie, setWatchingTrailer }) => {
+    if (!heroSlides || heroSlides.length === 0) {
+        return <div className="relative h-[70vh] bg-gray-800 rounded-3xl shadow-2xl flex items-center justify-center text-white">Loading Hero...</div>;
+    }
+
+    return (
+        <div className="relative h-[70vh] overflow-hidden rounded-3xl shadow-2xl">
+            {heroSlides.map((slide, index) => (
+                <div key={slide.movie.id} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
+                    <img src={slide.movie.backdrop} alt={slide.movie.title} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    <div className="absolute left-8 md:left-16 top-1/2 transform -translate-y-1/2 text-white max-w-2xl">
+                        <div className="animate-slideInLeft">
+                            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight drop-shadow-lg">{slide.title}</h1>
+                            <p className="text-xl md:text-2xl mb-8 text-white/90 leading-relaxed drop-shadow-md">{slide.subtitle}</p>
+                            <div className="flex flex-col sm:flex-row gap-4">
+                                <button onClick={() => setSelectedMovie(slide.movie)} className="shimmer-button px-8 py-4 bg-gradient-to-r from-fuchsia-600 via-pink-600 to-rose-600 rounded-2xl font-bold text-lg hover:from-fuchsia-700 hover:to-rose-700 transform hover:scale-105 transition-all duration-300 shadow-2xl hover:shadow-fuchsia-500/40">
+                                    Book Now - Starting at ₹{slide.movie.price}
+                                </button>
+                                <button onClick={() => setWatchingTrailer(slide.movie.trailer)} className="px-8 py-4 bg-white/20 backdrop-blur-md rounded-2xl font-bold text-lg hover:bg-white/30 transform hover:scale-105 transition-all duration-300 border border-white/20">
+                                    Watch Trailer
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        ))}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
-            {heroSlides.map((_, index) => (
-                <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-white shadow-lg scale-125' : 'bg-white/40 hover:bg-white/60'}`} />
             ))}
+            <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3">
+                {heroSlides.map((_, index) => (
+                    <button key={index} onClick={() => setCurrentSlide(index)} className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-white shadow-lg scale-125' : 'bg-white/40 hover:bg-white/60'}`} />
+                ))}
+            </div>
         </div>
-    </div>
-);
+    );
+};
+
 
 const MovieCard = ({ movie, index, setSelectedMovie, setWatchingTrailer }) => (
     <div className="group bg-white rounded-3xl shadow-xl overflow-hidden transform hover:scale-105 hover:-translate-y-3 transition-all duration-500 hover:shadow-2xl hover:shadow-fuchsia-500/20 animate-slideInUp border border-gray-100" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -109,6 +114,9 @@ const MovieCard = ({ movie, index, setSelectedMovie, setWatchingTrailer }) => (
         </div>
     </div>
 );
+
+// ... Other helper components (LanguageSelection, TicketCountSelection, etc.) remain the same ...
+// I will skip pasting them here for brevity, but they should remain in your file.
 
 const LanguageSelection = ({ languages, selectedLanguage, setSelectedLanguage }) => (
     <div className="p-8 animate-fadeIn">
@@ -179,13 +187,12 @@ const DateSelection = ({ selectedDate, setSelectedDate }) => {
     )
 }
 
-const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow }) => {
-    // Group showtimes by theater
+const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow, isFetchingShowtimes }) => {
     const showtimesByTheater = useMemo(() => {
         const grouped = {};
         if (showtimes && showtimes.length > 0) {
             showtimes.forEach(show => {
-                const theaterName = show.theater_id?.name;
+                const theaterName = show.theater_id?.name || 'Unknown Theater'; // SAFE ACCESS
                 if (!grouped[theaterName]) {
                     grouped[theaterName] = {
                         theater: theaterName,
@@ -201,7 +208,8 @@ const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow }) => {
     return (
         <div className="p-8 animate-fadeIn">
             <h3 className="text-xl font-bold mb-6 text-gray-800">Select a Showtime</h3>
-            {showtimes.length === 0 && (
+            {isFetchingShowtimes && <div className="text-center p-8"><LoaderCircle className="w-8 h-8 animate-spin mx-auto text-fuchsia-500" /></div>}
+            {!isFetchingShowtimes && showtimes.length === 0 && (
                 <div className="p-8 text-center">
                     <h3 className="text-xl font-bold mb-4 text-gray-800">No Showtimes Available</h3>
                     <p className="text-gray-600">There are currently no showtimes listed for this movie on the selected date.</p>
@@ -213,7 +221,7 @@ const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow }) => {
                         <div className="flex justify-between items-center mb-4">
                             <div>
                                 <div className="font-bold text-lg text-gray-800">{group.theater}</div>
-                                <div className="text-sm text-gray-500">Screen {group.showtimes[0].screen_number} • Premium Experience • Dolby Atmos</div>
+                                <div className="text-sm text-gray-500">Screen {group.showtimes[0]?.screen_number} • Premium Experience • Dolby Atmos</div>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -232,6 +240,9 @@ const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow }) => {
         </div>
     );
 };
+
+// ... All other components like SeatSelection, ContactDetails, etc. remain the same ...
+// ... I will skip pasting them here for brevity, but they should remain in your file.
 
 const SeatSelection = ({ numberOfTickets, seatLayout, selectedSeats, toggleSeat, totalPrice }) => {
     const seats = useMemo(() => {
@@ -365,11 +376,11 @@ const BookingConfirmation = ({ movie, selectedShow, selectedSeats, selectedDate,
                         </div>
                         <div>
                             <p className="text-gray-500">Time</p>
-                            <p className="font-semibold text-gray-800">{selectedShow.show_time}</p>
+                            <p className="font-semibold text-gray-800">{selectedShow?.show_time}</p>
                         </div>
                         <div>
                             <p className="text-gray-500">Screen</p>
-                            <p className="font-semibold text-gray-800">{selectedShow.screen_number}</p>
+                            <p className="font-semibold text-gray-800">{selectedShow?.screen_number}</p>
                         </div>
                         <div>
                             <p className="text-gray-500">Tickets</p>
@@ -471,23 +482,23 @@ const MyBookingsView = ({ bookingEmail, setBookingEmail, handleFetchBookings, us
                     {userBookings.map(booking => (
                         <div key={booking._id} className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden ticket-stub">
                             <div className="md:w-1/3 p-6 flex flex-col items-center justify-center text-center bg-gray-50">
-                                <img src={booking.showtime.movie.poster_url} alt={booking.showtime.movie.title} className="w-40 rounded-lg shadow-lg mb-4"/>
-                                <h3 className="text-2xl font-bold text-gray-800">{booking.showtime.movie.title}</h3>
+                                <img src={booking.showtime?.movie?.poster_url} alt={booking.showtime?.movie?.title} className="w-40 rounded-lg shadow-lg mb-4"/>
+                                <h3 className="text-2xl font-bold text-gray-800">{booking.showtime?.movie?.title}</h3>
                             </div>
                             <div className="flex-grow p-6">
-                                <h4 className="text-xl font-bold text-gray-800 mb-4">{booking.showtime.theater.name}</h4>
+                                <h4 className="text-xl font-bold text-gray-800 mb-4">{booking.showtime?.theater?.name}</h4>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-y-4 gap-x-2 text-sm mb-4">
                                     <div>
                                         <p className="text-gray-500">Date</p>
-                                        <p className="font-semibold text-gray-800">{new Date(booking.showtime.start_time).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</p>
+                                        <p className="font-semibold text-gray-800">{new Date(booking.showtime?.start_time).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-500">Time</p>
-                                        <p className="font-semibold text-gray-800">{new Date(booking.showtime.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
+                                        <p className="font-semibold text-gray-800">{new Date(booking.showtime?.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-500">Screen</p>
-                                        <p className="font-semibold text-gray-800">{booking.showtime.screen_number}</p>
+                                        <p className="font-semibold text-gray-800">{booking.showtime?.screen_number}</p>
                                     </div>
                                     <div>
                                         <p className="text-gray-500">Tickets</p>
@@ -647,21 +658,17 @@ const BookingModal = ({
         vipRows: [1, 2]
     }), []);
 
-    // State for showtimes fetched from the server
     const [showtimes, setShowtimes] = useState([]);
     const [isFetchingShowtimes, setIsFetchingShowtimes] = useState(false);
 
-    // Fetch showtimes from the server when movie or date changes
     useEffect(() => {
         const fetchShowtimes = async () => {
             if (!movie || !selectedDate) return;
             setIsFetchingShowtimes(true);
             try {
-                // Format the date to a simple YYYY-MM-DD string
                 const dateString = selectedDate.toISOString().split('T')[0];
                 const response = await axios.get(`${API_URL}/showtimes/${movie.id}/${dateString}`);
-                const moviesData = Array.isArray(response.data) ? response.data : [];
-                setShowtimes(response.data);
+                setShowtimes(Array.isArray(response.data) ? response.data : []); // SAFE ACCESS
             } catch (err) {
                 console.error("Error fetching showtimes:", err);
                 setShowtimes([]);
@@ -697,7 +704,6 @@ const BookingModal = ({
             const bookingData = {
                 user_email: contactEmail,
                 user_phone: contactPhone,
-                // --- EDITED: Use the real showtime_id from the selected show ---
                 showtime_id: selectedShow._id, 
                 seats: Array.from(selectedSeats),
                 total_price: totalPrice,
@@ -710,7 +716,6 @@ const BookingModal = ({
 
         } catch (err) {
             console.error("Booking failed:", err);
-            // You could show an error message to the user here
         }
     };
 
@@ -739,7 +744,7 @@ const BookingModal = ({
 
     const isNextDisabled = () => {
         const isShowtimeStep = bookingStep === (hasLanguageStep ? 4 : 3);
-        if (isShowtimeStep && showtimes.length === 0) {
+        if (isShowtimeStep && showtimes.length === 0 && !isFetchingShowtimes) {
             return true;
         }
         if (hasLanguageStep) {
@@ -785,7 +790,7 @@ const BookingModal = ({
                     </button>
                     <div className="absolute bottom-8 left-8 text-white max-w-2xl">
                         <h2 className="text-4xl font-bold mb-2">{movie.title}</h2>
-                        {selectedShow && <p className="font-semibold">{selectedShow.theater_id.name} - {selectedShow.show_time}</p>}
+                        {selectedShow && <p className="font-semibold">{selectedShow.theater_id?.name} - {selectedShow.show_time}</p>}
                     </div>
                 </div>
                 <div className="flex-grow overflow-y-auto">
@@ -841,12 +846,414 @@ const MobileMenu = ({ showMobileMenu, setShowMobileMenu, activeTab, setActiveTab
     </div>
 );
 
+
 const App = () => {
+    const [activeTab, setActiveTab] = useState('movies');
+    const [selectedCity, setSelectedCity] = useState('Hubballi');
+    const [selectedMovie, setSelectedMovie] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
+    const [selectedGenre, setSelectedGenre] = useState('All');
+    const [isLoading, setIsLoading] = useState(true);
+    const [showCityDropdown, setShowCityDropdown] = useState(false);
+    const [currentSlide, setCurrentSlide] = useState(0);
+    
+    const [bookingStep, setBookingStep] = useState(1);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedSeats, setSelectedSeats] = useState(new Set());
+    const [selectedShow, setSelectedShow] = useState(null);
+    const [numberOfTickets, setNumberOfTickets] = useState(0);
+    const [selectedLanguage, setSelectedLanguage] = useState(null);
+    const [contactEmail, setContactEmail] = useState('');
+    const [contactPhone, setContactPhone] = useState('');
+    const [watchingTrailer, setWatchingTrailer] = useState(null);
+    const [movies, setMovies] = useState([]);
+    const [error, setError] = useState(null);
+    const [bookingEmail, setBookingEmail] = useState('');
+    const [userBookings, setUserBookings] = useState([]);
+    const [isBookingLoading, setIsBookingLoading] = useState(false);
+    const [bookingError, setBookingError] = useState(null);
+
+    useEffect(() => {
+        const fetchMovies = async () => {
+            try {
+                setIsLoading(true);
+                const response = await axios.get(`${API_URL}/movies`);
+                
+                // --- FIX: Safely handle the API response ---
+                const moviesData = Array.isArray(response.data) ? response.data : [];
+
+                const formattedMovies = moviesData.map(movie => ({
+                    id: movie._id,
+                    title: movie.title,
+                    genre: movie.genres?.[0] || 'General', // SAFE ACCESS
+                    rating: movie.rating || 7.0,
+                    duration: movie.duration_minutes ? `${Math.floor(movie.duration_minutes / 60)}h ${movie.duration_minutes % 60}m` : '2h 0m',
+                    language: movie.language || 'Multi-Language',
+                    image: movie.poster_url,
+                    backdrop: movie.backdrop_url || movie.poster_url,
+                    description: movie.description,
+                    price: 150, 
+                    cast: movie.cast,
+                    director: movie.director,
+                    trailer: movie.trailer_url,
+                    trending: Math.random() > 0.5,
+                    newRelease: movie.release_date ? new Date(movie.release_date) > new Date(new Date().setMonth(new Date().getMonth() - 2)) : false, // SAFE ACCESS
+                    awards: 0,
+                    showtimesByTheater: []
+                }));
+
+                const comingSoonData = [
+                    {
+                        id: 'coming-soon-1',
+                        title: 'Sundari 2025',
+                        genre: 'Sci-Fi',
+                        rating: 0,
+                        duration: 'N/A',
+                        language: 'Kannada',
+                        image: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg',
+                        backdrop: 'https://image.tmdb.org/t/p/original/5wCKd423kEMw2d2IAl2c2225p5A.jpg',
+                        description: 'A futuristic tale of love and technology in the heart of Karnataka. Can humanity and AI coexist?',
+                        price: 0,
+                        cast: ['Radhika Kumaraswamy', 'Sreeleela'],
+                        director: 'Visionary Director',
+                        trailer: '',
+                        status: 'coming-soon',
+                        releaseDate: 'October 10, 2025',
+                        showtimesByTheater: []
+                    },
+                    {
+                        id: 'coming-soon-2',
+                        title: 'Thama 2025',
+                        genre: 'Thriller',
+                        rating: 0,
+                        duration: 'N/A',
+                        language: 'Tamil',
+                        image: 'https://image.tmdb.org/t/p/w500/yF1eOkaYvwiORauRCPWznV9xVvi.jpg',
+                        backdrop: 'https://image.tmdb.org/t/p/original/628Dep6wEtYdeVFAc4iW2rqk26M.jpg',
+                        description: 'A gripping thriller that will keep you on the edge of your seat. A detective races against time to solve a mystery.',
+                        price: 0,
+                        cast: ['Vijay Sethupathi', 'Trisha'],
+                        director: 'Masterful Filmmaker',
+                        trailer: '',
+                        status: 'coming-soon',
+                        releaseDate: 'December 5, 2025',
+                        showtimesByTheater: []
+                    }
+                ];
+
+                setMovies([...formattedMovies, ...comingSoonData]);
+                setError(null);
+            } catch (err) {
+                console.error("Failed to fetch movies from backend:", err);
+                setError("Could not load movies. Please make sure the backend server is running.");
+                setMovies([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchMovies();
+    }, []);
+
+    useEffect(() => {
+        if (movies.length > 2) {
+            const timer = setInterval(() => {
+                setCurrentSlide((prev) => (prev + 1) % 3);
+            }, 4000);
+            return () => clearInterval(timer);
+        }
+    }, [movies]);
+
+    useEffect(() => {
+        if (selectedMovie) {
+            setBookingStep(1);
+            setSelectedShow(null);
+            setSelectedSeats(new Set());
+            setNumberOfTickets(0);
+            setSelectedLanguage(null);
+            setSelectedDate(new Date());
+            setContactEmail('');
+            setContactPhone('');
+        }
+    }, [selectedMovie]);
+
+    const heroSlides = useMemo(() => {
+        const moviesWithPrice = movies.filter(m => typeof m.price === 'number' && m.price > 0 && m.status !== 'coming-soon');
+        if (moviesWithPrice.length < 3) return [];
+        
+        const sortedMovies = [...moviesWithPrice].sort((a, b) => b.rating - a.rating);
+        return [
+            { movie: sortedMovies[0], title: "Experience Cinema Like Never Before", subtitle: "Book premium seats with just a few taps" },
+            { movie: sortedMovies[1], title: "Your Ultimate Movie Destination", subtitle: "Discover blockbusters and hidden gems" },
+            { movie: sortedMovies[2], title: "Premium Comfort, Unbeatable Prices", subtitle: `Starting from just ₹${Math.min(...moviesWithPrice.map(m => m.price)) || 150} per ticket` }
+        ];
+    }, [movies]);
+
+    const cities = ['Hubballi', 'Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Hyderabad', 'Pune', 'Kolkata', 'Ahmedabad'];
+    const genres = ['All', 'Action', 'Adventure', 'Comedy', 'Drama', 'Sci-Fi', 'Thriller', 'Romance'];
+
+    const filteredMovies = useMemo(() => movies.filter(movie => {
+        if (movie.status === 'coming-soon') return false;
+
+        const searchLower = searchQuery.toLowerCase();
+        const titleMatch = (movie.title || '').toLowerCase().includes(searchLower);
+        const genreMatch = (movie.genre || '').toLowerCase().includes(searchLower);
+        const castMatch = movie.cast && movie.cast.some(actor => (actor || '').toLowerCase().includes(searchLower));
+        
+        const matchesSearch = titleMatch || genreMatch || castMatch;
+        const matchesGenre = selectedGenre === 'All' || movie.genre === selectedGenre;
+        
+        return matchesSearch && matchesGenre;
+    }), [movies, searchQuery, selectedGenre]);
+
+    const toggleSeat = (seatId) => {
+        const newSelectedSeats = new Set(selectedSeats);
+        if (newSelectedSeats.has(seatId)) {
+            newSelectedSeats.delete(seatId);
+        } else {
+            if (newSelectedSeats.size < numberOfTickets) {
+                newSelectedSeats.add(seatId);
+            } else {
+                console.log(`You can only select ${numberOfTickets} tickets.`);
+            }
+        }
+        setSelectedSeats(newSelectedSeats);
+    };
+
+    const handleFetchBookings = async () => {
+        if (!bookingEmail) {
+            setBookingError("Please enter an email address.");
+            return;
+        }
+
+        const normalizedEmail = bookingEmail.trim().toLowerCase();
+
+        setIsBookingLoading(true);
+        setBookingError(null);
+        setUserBookings([]);
+        try {
+            const response = await axios.get(`${API_URL}/bookings/user/${normalizedEmail}`);
+            if (response.data && response.data.length > 0) {
+                setUserBookings(response.data);
+            } else {
+                setBookingError("No bookings found for this email address.");
+            }
+        } catch (err) {
+            console.error("Failed to fetch bookings:", err);
+            setBookingError("Could not retrieve bookings. Please try again later.");
+        } finally {
+            setIsBookingLoading(false);
+        }
+    };
+
+    if (isLoading) {
+        return <LoadingScreen />;
+    }
+
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200">
-            egwggwr
-        </div>      
-    )
-}
+        <>
+            <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .shimmer-button {
+            position: relative;
+            overflow: hidden;
+        }
+        .shimmer-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: rotate(30deg);
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1);
+            pointer-events: none;
+        }
+        .shimmer-button:hover::after {
+            transform: translate(30%, -10%) rotate(30deg);
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .rotate-x-45 {
+            transform: rotateX(45deg);
+        }
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 8px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 10px;
+        }
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: #a78bfa;
+        }
+      `}</style>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-rose-50 to-fuchsia-50 text-gray-800">
+                <header className="bg-white/80 backdrop-blur-xl shadow-lg sticky top-0 z-40 border-b border-white/20">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-16">
+                            <div className="flex items-center space-x-3 animate-slideInLeft">
+                                <div className="relative">
+                                    <svg width="40" height="40" viewBox="0 0 100 100" className="transform hover:scale-110 transition-all duration-300 drop-shadow-2xl">
+                                        <path d="M15 20 C15 15, 20 10, 25 10 L75 10 C80 10, 85 15, 85 20 L85 35 C82 35, 80 37, 80 40 C80 43, 82 45, 85 45 L85 80 C85 85, 80 90, 75 90 L25 90 C20 90, 15 85, 15 80 L15 45 C18 45, 20 43, 20 40 C20 37, 18 35, 15 35 Z" fill="#EF4444" className="drop-shadow-lg" />
+                                        <polygon points="35,30 35,50 50,40" fill="white" className="drop-shadow-sm" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span className="text-xl font-bold text-gray-900 tracking-wide">MOVIKO</span>
+                                    <div className="text-xs text-gray-500 font-medium -mt-1">Cinema & Chill</div>
+                                </div>
+                            </div>
+                            <nav className="hidden md:flex space-x-1 animate-slideInUp bg-gray-100/50 backdrop-blur-sm rounded-2xl p-1" style={{ animationDelay: '0.2s' }}>
+                                {[{ key: 'movies', label: 'Movies', icon: Play }, { key: 'theaters', label: 'Theaters', icon: MapPin }, { key: 'offers', label: 'Offers', icon: Gift }, { key: 'comingSoon', label: 'Coming Soon', icon: Zap }, { key: 'myBookings', label: 'My Bookings', icon: Ticket }].map(({ key, label, icon: Icon }) => (
+                                    <button key={key} onClick={() => setActiveTab(key)} className={`px-4 py-2 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center gap-2 text-sm ${activeTab === key ? 'bg-gradient-to-r from-fuchsia-600 to-rose-600 text-white shadow-lg shadow-fuchsia-500/30' : 'text-gray-600 hover:text-gray-800 hover:bg-white/70'}`}>
+                                        <Icon className="w-4 h-4" />{label}
+                                    </button>
+                                ))}
+                            </nav>
+                            <div className="flex items-center space-x-2 animate-slideInRight">
+                                <div className="relative hidden sm:block">
+                                    <button onClick={() => setShowCityDropdown(!showCityDropdown)} className="flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl px-3 py-2 text-sm font-semibold focus:ring-2 focus:ring-fuchsia-500 focus:bg-white shadow-lg hover:shadow-xl transition-all duration-300">
+                                        <MapPin className="w-4 h-4 text-fuchsia-500" />
+                                        <span>{selectedCity}</span>
+                                        <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${showCityDropdown ? 'rotate-90' : ''}`} />
+                                    </button>
+                                    {showCityDropdown && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/20 py-2 animate-slideDown z-50">
+                                            {cities.map(city => (
+                                                <a href="#" key={city} onClick={(e) => { e.preventDefault(); setSelectedCity(city); setShowCityDropdown(false); }} className={`block px-4 py-2 text-gray-700 hover:bg-gray-100 transition-colors ${selectedCity === city ? 'font-bold text-fuchsia-600' : ''}`}>{city}</a>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                <button className="p-2 text-gray-600 hover:text-gray-800 rounded-2xl hover:bg-white/70 transition-all duration-300 transform hover:scale-110 relative">
+                                    <Bell className="w-5 h-5" />
+                                    <div className="absolute top-0 right-0 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse border-2 border-white/80"></div>
+                                </button>
+                                <button onClick={() => setShowMobileMenu(true)} className="p-3 md:hidden text-gray-600 hover:text-gray-800 rounded-2xl hover:bg-white/70 transition-all duration-300">
+                                    <Menu className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                    {error && <div className="col-span-full text-center py-20 text-red-500 bg-red-100 rounded-2xl text-lg">{error}</div>}
+                    
+                    {!error && activeTab === 'movies' && (
+                        <>
+                            <HeroSection 
+                                heroSlides={heroSlides} 
+                                currentSlide={currentSlide} 
+                                setCurrentSlide={setCurrentSlide}
+                                setSelectedMovie={setSelectedMovie}
+                                setWatchingTrailer={setWatchingTrailer}
+                            />
+                            <div className="mt-12">
+                                <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-8">
+                                    <div className="relative w-full sm:max-w-md">
+                                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                        <input type="text" placeholder="Search for movies, genres, or cast..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white/80 backdrop-blur-sm rounded-2xl py-4 pl-12 pr-4 text-sm font-medium border border-gray-200 focus:outline-none focus:ring-2 focus:ring-fuchsia-500 shadow-lg" />
+                                    </div>
+                                    <div className="flex flex-wrap justify-center sm:justify-end gap-3">
+                                        {genres.map(genre => (
+                                            <button key={genre} onClick={() => setSelectedGenre(genre)} className={`px-5 py-2 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 ${selectedGenre === genre ? 'bg-gradient-to-r from-fuchsia-600 to-rose-600 text-white shadow-lg shadow-fuchsia-500/30' : 'bg-white text-gray-700 hover:bg-gray-100'}`}>
+                                                {genre}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                                    {filteredMovies.length > 0 ? (
+                                        filteredMovies.map((movie, index) => (
+                                            <MovieCard 
+                                                key={movie.id} 
+                                                movie={movie} 
+                                                index={index} 
+                                                setSelectedMovie={setSelectedMovie}
+                                                setWatchingTrailer={setWatchingTrailer}
+                                            />
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full text-center py-20 text-gray-500 text-lg">No movies found for your search.</div>
+                                    )}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                    {activeTab === 'theaters' && <TheatersView />}
+                    {activeTab === 'offers' && <OffersView />}
+                    {activeTab === 'comingSoon' && <ComingSoonView movies={movies} />}
+                    {activeTab === 'myBookings' && (
+                        <MyBookingsView 
+                            bookingEmail={bookingEmail}
+                            setBookingEmail={setBookingEmail}
+                            handleFetchBookings={handleFetchBookings}
+                            userBookings={userBookings}
+                            isBookingLoading={isBookingLoading}
+                            bookingError={bookingError}
+                        />
+                    )}
+                </main>
+
+                {selectedMovie && (
+                    <BookingModal 
+                        movie={selectedMovie} 
+                        onClose={() => setSelectedMovie(null)}
+                        bookingStep={bookingStep}
+                        setBookingStep={setBookingStep}
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                        numberOfTickets={numberOfTickets}
+                        setNumberOfTickets={setNumberOfTickets}
+                        selectedLanguage={selectedLanguage}
+                        setSelectedLanguage={setSelectedLanguage}
+                        selectedShow={selectedShow}
+                        setSelectedShow={setSelectedShow}
+                        selectedSeats={selectedSeats}
+                        setSelectedSeats={setSelectedSeats}
+                        contactEmail={contactEmail}
+                        setContactEmail={setContactEmail}
+                        contactPhone={contactPhone}
+                        setContactPhone={setContactPhone}
+                        toggleSeat={toggleSeat}
+                    />
+                )}
+                {watchingTrailer && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn" onClick={() => setWatchingTrailer(null)}>
+                        <div className="relative w-full max-w-4xl aspect-video" onClick={(e) => e.stopPropagation()}>
+                            <button onClick={() => setWatchingTrailer(null)} className="absolute -top-12 right-0 text-white p-2 hover:opacity-80 transition-opacity">
+                                <X size={32} />
+                            </button>
+                            <iframe
+                                className="w-full h-full rounded-2xl"
+                                src={`${watchingTrailer}?autoplay=1`}
+                                title="Movie Trailer"
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+                    </div>
+                )}
+                <MobileMenu 
+                    showMobileMenu={showMobileMenu}
+                    setShowMobileMenu={setShowMobileMenu}
+                    activeTab={activeTab}
+                    setActiveTab={setActiveTab}
+                />
+            </div>
+        </>
+    );
+};
 
 export default App;
