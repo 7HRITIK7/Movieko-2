@@ -185,7 +185,7 @@ const ShowtimeSelection = ({ showtimes, selectedShow, setSelectedShow }) => {
         const grouped = {};
         if (showtimes && showtimes.length > 0) {
             showtimes.forEach(show => {
-                const theaterName = show.theater_id.name;
+                const theaterName = show.theater_id?.name;
                 if (!grouped[theaterName]) {
                     grouped[theaterName] = {
                         theater: theaterName,
@@ -660,6 +660,7 @@ const BookingModal = ({
                 // Format the date to a simple YYYY-MM-DD string
                 const dateString = selectedDate.toISOString().split('T')[0];
                 const response = await axios.get(`${API_URL}/showtimes/${movie.id}/${dateString}`);
+                const moviesData = Array.isArray(response.data) ? response.data : [];
                 setShowtimes(response.data);
             } catch (err) {
                 console.error("Error fetching showtimes:", err);
@@ -873,10 +874,10 @@ const App = () => {
                 setIsLoading(true);
                 const response = await axios.get(`${API_URL}/movies`);
                 
-                const formattedMovies = response.data.map(movie => ({
+                const formattedMovies = moviesData.data.map(movie => ({
                     id: movie._id,
                     title: movie.title,
-                    genre: movie.genres ? movie.genres[0] : 'General',
+                    genre: movie.genres?.[0] || 'General',
                     rating: movie.rating || 7.0,
                     duration: movie.duration_minutes ? `${Math.floor(movie.duration_minutes / 60)}h ${movie.duration_minutes % 60}m` : '2h 0m',
                     language: movie.language || 'Multi-Language',
@@ -970,6 +971,9 @@ const App = () => {
     }, [selectedMovie]);
 
     const heroSlides = useMemo(() => {
+        if (!heroSlides || heroSlides.length === 0) {
+        return <div className="relative h-[70vh] bg-gray-800"></div>; // Placeholder
+    }
         if (movies.length < 3) return [];
         const moviesWithPrice = movies.filter(m => typeof m.price === 'number' && m.price > 0);
         if (moviesWithPrice.length < 3) return [];
